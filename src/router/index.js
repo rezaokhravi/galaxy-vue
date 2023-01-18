@@ -1,25 +1,34 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import {createRouter, createWebHistory, useRoute} from 'vue-router'
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    {
+        path: '/',
+        name: 'home',
+        beforeEnter: async (_to, _from, next) => {
+            //await Promise.resolve(true); // Here I am doing calls to my API.
+            if (!_to.query.hasOwnProperty('q')) {
+                next({path: '/notfound'});
+            } else {
+                next();
+            }
+        },
+        component: () => import('../views/HomeView.vue')
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: () => import('../views/AboutView.vue')
+    },
+    {
+        path: '/notfound',
+        name: 'notFound',
+        component: () => import(/* webpackChunkName: "about" */ '../views/NotFoundView.vue')
+    },
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(process.env.BASE_URL),
+    routes
 })
 
 export default router
